@@ -104,6 +104,7 @@ export default function App() {
       .then( response => response.json())
       .catch( error => console.error(error));
 
+    console.log(response.result)
     setRecentFistBumps(response.result);
   }
 
