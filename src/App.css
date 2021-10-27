@@ -20,15 +20,20 @@
 
 .bio {
   text-align: center;
-  color: gray;
+  color: #403D39;
   margin-top: 16px;
 }
 
-.waveButton {
+.fistBumpButton {
+  background-color: #4F5D75;
+  color: #FFFCF2;
   cursor: pointer;
-  margin-top: 16px;
-  padding: 8px;
+  font-size: 1.25rem;
+  margin-top: 2rem;
+  padding: 1rem 2rem;
   border: 0;
-  border-radius: 5px;
-  
+  border-radius: 10px;
+  width: max-content;
+  display: flex;
+  align-self: center;
 }

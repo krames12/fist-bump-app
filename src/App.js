@@ -4,8 +4,8 @@ import './App.css';
 
 export default function App() {
 
-  const wave = () => {
-    
+  const fistBump = () => {
+
   }
   
   return (
@@ -13,15 +13,15 @@ export default function App() {
 
       <div className="dataContainer">
         <div className="header">
-        👋 Hey there!
+        <span role="img" aria-label="waving hand sign emoji">👋</span> Hey there!
         </div>
 
         <div className="bio">
         I am Nick and I'm a maker and dice rolling gamer, that's pretty neat right? Connect your Ethereum wallet and send me a fist bump!
         </div>
 
-        <button className="waveButton" onClick={wave}>
-          Fist bump 👊
+        <button className="fistBumpButton" onClick={fistBump}>
+          Fist bump <span role="img" aria-label="fisted hand sign emoji">👊</span>
         </button>
       </div>
     </div>
