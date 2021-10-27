@@ -6,6 +6,8 @@ import abi from "./utils/FistBumpPortal.json";
 export default function App() {
   const [currentAccount, setCurrentAccount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [totalFistBumps, setTotalFistBumps] = useState(0);
+  const [recentFistBumps, setRecentFistBumps] = useState([]);
   const { ethereum } = window;
 
   const checkIfWalledIsConnected = async () => {
@@ -27,9 +29,23 @@ export default function App() {
     }
   }
 
+  const createNewContract = () => {
+    const provider = new ethers.providers.Web3Provider(ethereum);
+    const signer = provider.getSigner();
+    return new ethers.Contract(
+      process.env.REACT_APP_CONTRACT_ADDRESS,
+      abi.abi,
+      signer);
+  }
+
   useEffect(() => {
     checkIfWalledIsConnected();
   });
+
+  useEffect(() => {
+    getTotalFistBumps();
+    getRecentTxns();
+  }, [setIsLoading]);
 
   const connectWallet = async () => {
     try {
@@ -48,18 +64,25 @@ export default function App() {
     }
   }
 
+  const getTotalFistBumps = async () => {
+    try {
+      if(ethereum) {
+        const fistBumpPortalContract = createNewContract();
+
+        let bumpCount = await fistBumpPortalContract.getTotalFistBumps();
+        setTotalFistBumps(bumpCount.toNumber());
+      } else {
+        console.log("Etherum object doesn't exist!");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   const fistBump = async () => {
     try {
       if(ethereum) {
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
-        const fistBumpPortalContract = new ethers.Contract(
-          process.env.REACT_APP_CONTRACT_ADDRESS,
-          abi.abi,
-          signer);
-
-        let count = await fistBumpPortalContract.getTotalFistBumps();
-        console.log("Retrieved total fist bump count...", count.toNumber());
+        const fistBumpPortalContract = createNewContract();
 
         const fistBumpTxn = await fistBumpPortalContract.fistBump();
         setIsLoading(true);
@@ -68,15 +91,20 @@ export default function App() {
         await fistBumpTxn.wait();
         console.log("Mined -- ", fistBumpTxn.hash);
         setIsLoading(false);
-
-        count = await fistBumpPortalContract.getTotalFistBumps();
-        console.log("Retrieved total fist bump count...", count.toNumber());
       } else {
         console.log("Etherum object doesn't exist!");
       }
     } catch (error) {
       console.error(error);
     }
+  }
+
+  const getRecentTxns = async () => {
+    const response = await fetch(`https://api-rinkeby.etherscan.io/api?module=account&action=txlist&address=${process.env.REACT_APP_CONTRACT_ADDRESS}&startblock=0&endblock=99999999&sort=asc&apikey=${process.env.REACT_APP_ETHERSCAN_API_KEY}`)
+      .then( response => response.json())
+      .catch( error => console.error(error));
+
+    setRecentFistBumps(response.result);
   }
 
   return (
@@ -97,6 +125,8 @@ export default function App() {
             (<span>Fist bump <span role="img" aria-label="fisted hand sign emoji">👊</span></span>)
           }
         </button>
+
+        <p className="totalFistBumpOutput">Total Fist Bumps: {totalFistBumps}</p>
 
         {!currentAccount && (
           <button className="fistBumpButton" onClick={connectWallet}>
