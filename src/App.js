@@ -17,11 +17,11 @@ export default function App() {
         </div>
 
         <div className="bio">
-        I am farza and I worked on self-driving cars so that's pretty cool right? Connect your Ethereum wallet and wave at me!
+        I am Nick and I'm a maker and dice rolling gamer, that's pretty neat right? Connect your Ethereum wallet and send me a fist bump!
         </div>
 
         <button className="waveButton" onClick={wave}>
-          Wave at Me
+          Fist bump 👊
         </button>
       </div>
     </div>
