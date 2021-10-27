@@ -24,6 +24,10 @@ export default function App() {
           Fist bump <span role="img" aria-label="fisted hand sign emoji">👊</span>
         </button>
       </div>
+      <div className="recentBumpsContainer">
+        <h2>Recent Fist Bumps</h2>
+        <p>No fist bumps yet, but you could be the first!</p>
+      </div>
     </div>
   );
 }
