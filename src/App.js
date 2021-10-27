@@ -5,6 +5,7 @@ import abi from "./utils/FistBumpPortal.json";
 
 export default function App() {
   const [currentAccount, setCurrentAccount] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const { ethereum } = window;
 
   const checkIfWalledIsConnected = async () => {
@@ -61,10 +62,12 @@ export default function App() {
         console.log("Retrieved total fist bump count...", count.toNumber());
 
         const fistBumpTxn = await fistBumpPortalContract.fistBump();
+        setIsLoading(true);
         console.log("Mining...", fistBumpTxn.hash);
 
         await fistBumpTxn.wait();
         console.log("Mined -- ", fistBumpTxn.hash);
+        setIsLoading(false);
 
         count = await fistBumpPortalContract.getTotalFistBumps();
         console.log("Retrieved total fist bump count...", count.toNumber());
@@ -89,7 +92,10 @@ export default function App() {
         </div>
 
         <button className="fistBumpButton" onClick={fistBump}>
-          Fist bump <span role="img" aria-label="fisted hand sign emoji">👊</span>
+          {isLoading ? 
+            `Sending...` : 
+            (<span>Fist bump <span role="img" aria-label="fisted hand sign emoji">👊</span></span>)
+          }
         </button>
 
         {!currentAccount && (

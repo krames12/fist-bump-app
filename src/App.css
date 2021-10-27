@@ -41,3 +41,8 @@
   display: flex;
   align-self: center;
 }
+
+.fistBumpButton:disabled {
+  background-color: #646b77;
+  cursor: not-allowed;
+}
