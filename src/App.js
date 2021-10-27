@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import './App.css';
+import abi from "./utils/FistBumpPortal.json";
 
 export default function App() {
   const [currentAccount, setCurrentAccount] = useState("");
@@ -27,7 +28,7 @@ export default function App() {
 
   useEffect(() => {
     checkIfWalledIsConnected();
-  }, []);
+  });
 
   const connectWallet = async () => {
     try {
@@ -46,6 +47,35 @@ export default function App() {
     }
   }
 
+  const fistBump = async () => {
+    try {
+      if(ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const fistBumpPortalContract = new ethers.Contract(
+          process.env.REACT_APP_CONTRACT_ADDRESS,
+          abi.abi,
+          signer);
+
+        let count = await fistBumpPortalContract.getTotalFistBumps();
+        console.log("Retrieved total fist bump count...", count.toNumber());
+
+        const fistBumpTxn = await fistBumpPortalContract.fistBump();
+        console.log("Mining...", fistBumpTxn.hash);
+
+        await fistBumpTxn.wait();
+        console.log("Mined -- ", fistBumpTxn.hash);
+
+        count = await fistBumpPortalContract.getTotalFistBumps();
+        console.log("Retrieved total fist bump count...", count.toNumber());
+      } else {
+        console.log("Etherum object doesn't exist!");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
     <div className="mainContainer">
 
@@ -58,7 +88,7 @@ export default function App() {
         I am Nick and I'm a maker and dice rolling gamer, that's pretty neat right? Connect your Ethereum wallet and send me a fist bump!
         </div>
 
-        <button className="fistBumpButton" onClick={null}>
+        <button className="fistBumpButton" onClick={fistBump}>
           Fist bump <span role="img" aria-label="fisted hand sign emoji">👊</span>
         </button>
 
