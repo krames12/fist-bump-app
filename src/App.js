@@ -100,7 +100,7 @@ export default function App() {
   }
 
   const getRecentTxns = async () => {
-    const response = await fetch(`https://api-rinkeby.etherscan.io/api?module=account&action=txlist&address=${process.env.REACT_APP_CONTRACT_ADDRESS}&startblock=0&endblock=99999999&sort=asc&apikey=${process.env.REACT_APP_ETHERSCAN_API_KEY}`)
+    const response = await fetch(`https://api-rinkeby.etherscan.io/api?module=account&action=txlist&address=${process.env.REACT_APP_CONTRACT_ADDRESS}&startblock=0&endblock=99999999&sort=desc&apikey=${process.env.REACT_APP_ETHERSCAN_API_KEY}`)
       .then( response => response.json())
       .catch( error => console.error(error));
 
@@ -137,7 +137,15 @@ export default function App() {
       </div>
       <div className="recentBumpsContainer">
         <h2>Recent Fist Bumps</h2>
-        <p>No fist bumps yet, but you could be the first!</p>
+        {recentFistBumps.length ? (
+          <ul className="recentFistBumpsList">
+            {recentFistBumps.map( txn => (
+              <li className="recentFistBump" key={txn.timeStamp}>{txn.from} - {txn.timeStamp}</li>
+            ))}
+          </ul>
+        ) : (
+          <p>No fist bumps yet, but you could be the first!</p>
+        )}
       </div>
     </div>
   );

@@ -52,3 +52,12 @@
   font-size: 1.25rem;
   font-weight: 500;
 }
+
+.recentFistBumpsList {
+  list-style: none;
+  padding-inline-start: 0;
+}
+
+.recentFistBump {
+  padding: 0.25rem 0;
+}
