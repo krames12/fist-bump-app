@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import './App.css';
-import abi from "./utils/FistBumpPortal.json";
+import abi from "./utils/FistBumpPortal.json"
 
 export default function App() {
   /* eslint-disable react-hooks/exhaustive-deps */
@@ -78,7 +78,7 @@ export default function App() {
       if(ethereum) {
         const fistBumpPortalContract = createNewContract();
 
-        const fistBumpTxn = await fistBumpPortalContract.fistBump();
+        const fistBumpTxn = await fistBumpPortalContract.fistBump("Good 'ol fisty bumperino");
         setIsLoading(true);
         console.log("Mining...", fistBumpTxn.hash);
 
@@ -101,6 +101,8 @@ export default function App() {
         const fistBumps = await fistBumpPortalContract.getAllFistBumps();
         const cleanedFistBumps = cleanFistBumps(fistBumps);
 
+        console.log(cleanedFistBumps);
+
         setRecentFistBumps(cleanedFistBumps)
       } else {
         console.log("Etherum object doesn't exist!");
@@ -111,11 +113,15 @@ export default function App() {
   }
 
   const cleanFistBumps = fistBumps => {
-    return fistBumps.map( fistBump => ({
-      address: fistBump.waver,
-      timestamp: new Date(fistBump.timeStamp * 1000),
-      message: fistBump.message
-    }))
+    return fistBumps.map( fistBump => {
+      const timestamp = ethers.BigNumber.from(fistBump.timestamp._hex).toNumber()
+      console.log(timestamp);
+      return {
+        address: fistBump.bumper,
+        // timestamp: new Date(timestamp * 1000),
+        message: fistBump.message
+      }
+    })
   }
 
   return (
@@ -150,7 +156,7 @@ export default function App() {
         {recentFistBumps.length ? (
           <ul className="recentFistBumpsList">
             {recentFistBumps.map( txn => (
-              <li className="recentFistBump" key={txn.timestamp}>{txn.address} - {txn.timestamp} - {txn.message}</li>
+              <li className="recentFistBump" key={`bump-${Math.random()}`}>{txn.address} - {txn.timestamp} - {txn.message}</li>
             ))}
           </ul>
         ) : (
