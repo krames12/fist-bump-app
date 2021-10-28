@@ -4,6 +4,7 @@ import './App.css';
 import abi from "./utils/FistBumpPortal.json";
 
 export default function App() {
+  /* eslint-disable react-hooks/exhaustive-deps */
   const [currentAccount, setCurrentAccount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [totalFistBumps, setTotalFistBumps] = useState(0);
@@ -38,6 +39,21 @@ export default function App() {
       signer);
   }
 
+  const getTotalFistBumps = async () => {
+    try {
+      if(ethereum) {
+        const fistBumpPortalContract = createNewContract();
+
+        let bumpCount = await fistBumpPortalContract.getTotalFistBumps();
+        setTotalFistBumps(bumpCount.toNumber());
+      } else {
+        console.log("Etherum object doesn't exist!");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   useEffect(() => {
     checkIfWalledIsConnected();
   });
@@ -59,21 +75,6 @@ export default function App() {
       
       console.log("Connected", accounts[0]);
       setCurrentAccount(accounts[0]);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  const getTotalFistBumps = async () => {
-    try {
-      if(ethereum) {
-        const fistBumpPortalContract = createNewContract();
-
-        let bumpCount = await fistBumpPortalContract.getTotalFistBumps();
-        setTotalFistBumps(bumpCount.toNumber());
-      } else {
-        console.log("Etherum object doesn't exist!");
-      }
     } catch (error) {
       console.error(error);
     }
