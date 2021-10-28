@@ -12,18 +12,12 @@ export default function App() {
   const { ethereum } = window;
 
   const checkIfWalledIsConnected = async () => {
-    if(!ethereum) {
-      console.log("Make sure you have metamask!");
-      return;
-    } else {
-      console.log("We have the ethereum object!", ethereum);
-    }
+    if(!ethereum) return;
 
     const accounts = await ethereum.request({ method: "eth_accounts" });
 
     if(accounts.length !== 0) {
       const account = accounts[0];
-      console.log("Found an authorized account:", account);
       setCurrentAccount(account);
     } else {
       console.log("No authorized account found")
@@ -60,7 +54,7 @@ export default function App() {
 
   useEffect(() => {
     getTotalFistBumps();
-    getRecentTxns();
+    getAllFistBumps();
   }, [setIsLoading]);
 
   const connectWallet = async () => {
@@ -73,7 +67,6 @@ export default function App() {
       
       const accounts = await ethereum.request({ method: "eth_requestAccounts" });
       
-      console.log("Connected", accounts[0]);
       setCurrentAccount(accounts[0]);
     } catch (error) {
       console.error(error);
@@ -100,13 +93,29 @@ export default function App() {
     }
   }
 
-  const getRecentTxns = async () => {
-    const response = await fetch(`https://api-rinkeby.etherscan.io/api?module=account&action=txlist&address=${process.env.REACT_APP_CONTRACT_ADDRESS}&startblock=0&endblock=99999999&sort=desc&apikey=${process.env.REACT_APP_ETHERSCAN_API_KEY}`)
-      .then( response => response.json())
-      .catch( error => console.error(error));
+  const getAllFistBumps = async () => {
+    try {
+      if(ethereum) {
+        const fistBumpPortalContract = createNewContract();
 
-    console.log(response.result)
-    setRecentFistBumps(response.result);
+        const fistBumps = await fistBumpPortalContract.getAllFistBumps();
+        const cleanedFistBumps = cleanFistBumps(fistBumps);
+
+        setRecentFistBumps(cleanedFistBumps)
+      } else {
+        console.log("Etherum object doesn't exist!");
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const cleanFistBumps = fistBumps => {
+    return fistBumps.map( fistBump => ({
+      address: fistBump.waver,
+      timestamp: new Date(fistBump.timeStamp * 1000),
+      message: fistBump.message
+    }))
   }
 
   return (
@@ -141,7 +150,7 @@ export default function App() {
         {recentFistBumps.length ? (
           <ul className="recentFistBumpsList">
             {recentFistBumps.map( txn => (
-              <li className="recentFistBump" key={txn.timeStamp}>{txn.from} - {txn.timeStamp}</li>
+              <li className="recentFistBump" key={txn.timestamp}>{txn.address} - {txn.timestamp} - {txn.message}</li>
             ))}
           </ul>
         ) : (
