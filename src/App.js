@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import './App.css';
 import abi from "./utils/FistBumpPortal.json"
+import FistBumpForm from "./components/FistBumpForm";
+import RecentFistBumps from "./components/RecentFistBumps";
 
 export default function App() {
   /* eslint-disable react-hooks/exhaustive-deps */
@@ -55,7 +57,7 @@ export default function App() {
   useEffect(() => {
     getTotalFistBumps();
     getAllFistBumps();
-  }, [setIsLoading]);
+  }, [isLoading]);
 
   const connectWallet = async () => {
     try {
@@ -73,12 +75,12 @@ export default function App() {
     }
   }
 
-  const fistBump = async () => {
+  const fistBump = async (message) => {
     try {
       if(ethereum) {
         const fistBumpPortalContract = createNewContract();
 
-        const fistBumpTxn = await fistBumpPortalContract.fistBump("Good 'ol fisty bumperino");
+        const fistBumpTxn = await fistBumpPortalContract.fistBump(message, { gasLimit: 500000});
         setIsLoading(true);
         console.log("Mining...", fistBumpTxn.hash);
 
@@ -89,6 +91,7 @@ export default function App() {
         console.log("Etherum object doesn't exist!");
       }
     } catch (error) {
+      setIsLoading(false);
       console.error(error);
     }
   }
@@ -101,9 +104,7 @@ export default function App() {
         const fistBumps = await fistBumpPortalContract.getAllFistBumps();
         const cleanedFistBumps = cleanFistBumps(fistBumps);
 
-        console.log(cleanedFistBumps);
-
-        setRecentFistBumps(cleanedFistBumps)
+        setRecentFistBumps(cleanedFistBumps.reverse())
       } else {
         console.log("Etherum object doesn't exist!");
       }
@@ -113,15 +114,11 @@ export default function App() {
   }
 
   const cleanFistBumps = fistBumps => {
-    return fistBumps.map( fistBump => {
-      const timestamp = ethers.BigNumber.from(fistBump.timestamp._hex).toNumber()
-      console.log(timestamp);
-      return {
+    return fistBumps.map( fistBump => ({
         address: fistBump.bumper,
-        // timestamp: new Date(timestamp * 1000),
         message: fistBump.message
-      }
-    })
+      })
+    )
   }
 
   return (
@@ -136,33 +133,15 @@ export default function App() {
         I am Nick and I'm a maker and dice rolling gamer, that's pretty neat right? Connect your Ethereum wallet and send me a fist bump!
         </div>
 
-        <button className="fistBumpButton" onClick={fistBump}>
-          {isLoading ? 
-            `Sending...` : 
-            (<span>Fist bump <span role="img" aria-label="fisted hand sign emoji">👊</span></span>)
-          }
-        </button>
-
-        <p className="totalFistBumpOutput">Total Fist Bumps: {totalFistBumps}</p>
-
-        {!currentAccount && (
-          <button className="fistBumpButton" onClick={connectWallet}>
-            Connect Wallet
-          </button>
-        )}
+        <FistBumpForm
+          isLoading={isLoading}
+          currentAccount={currentAccount}
+          fistBumpHandler={fistBump}
+          totalFistBumps={totalFistBumps}
+          connectWalletHandler={connectWallet}
+        />
       </div>
-      <div className="recentBumpsContainer">
-        <h2>Recent Fist Bumps</h2>
-        {recentFistBumps.length ? (
-          <ul className="recentFistBumpsList">
-            {recentFistBumps.map( txn => (
-              <li className="recentFistBump" key={`bump-${Math.random()}`}>{txn.address} - {txn.timestamp} - {txn.message}</li>
-            ))}
-          </ul>
-        ) : (
-          <p>No fist bumps yet, but you could be the first!</p>
-        )}
-      </div>
+      <RecentFistBumps recentFistBumps={recentFistBumps} />
     </div>
   );
 }
