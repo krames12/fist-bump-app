@@ -11,10 +11,15 @@ const FistBumpForm = ({
 
   return (
     <>
-      <input
-        value={message}
-        onChange={event => setMessage(event.target.value)}
-      />
+      <label className="fistBumpMessageLabel" htmlFor="fistBumpMessageInput">
+        Send a message
+        <input
+          className="fistBumpMessageInput"
+          id="fistBumpMessageInput"
+          value={message}
+          onChange={event => setMessage(event.target.value)}
+        />
+      </label>
       <button className="fistBumpButton" onClick={() => fistBumpHandler(message)}>
         {isLoading ? 
           `Sending...` : 

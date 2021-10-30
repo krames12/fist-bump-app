@@ -50,15 +50,6 @@ export default function App() {
     }
   }
 
-  useEffect(() => {
-    checkIfWalledIsConnected();
-  });
-
-  useEffect(() => {
-    getTotalFistBumps();
-    getAllFistBumps();
-  }, [isLoading]);
-
   const connectWallet = async () => {
     try {
 
@@ -120,6 +111,42 @@ export default function App() {
       })
     )
   }
+
+  useEffect(() => {
+    let fistBumpPortalContract;
+
+    const onNewFistBump = (from, timestamp, message) => {
+      console.log('NewFistBump', from, timestamp, message);
+
+      setRecentFistBumps(previousState => [
+        ...previousState,
+        {
+          address: from,
+          message: message
+        },
+      ])
+    }
+
+    if(ethereum) {
+      fistBumpPortalContract = createNewContract();
+      fistBumpPortalContract.on('NewFistBump', onNewFistBump);
+    }
+
+    return () => {
+      if(fistBumpPortalContract) {
+        fistBumpPortalContract.off('NewFistBump', onNewFistBump);
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    checkIfWalledIsConnected();
+  });
+
+  useEffect(() => {
+    getTotalFistBumps();
+    getAllFistBumps();
+  }, [isLoading]);
 
   return (
     <div className="mainContainer">
