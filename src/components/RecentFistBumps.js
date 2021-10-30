@@ -6,7 +6,10 @@ const RecentFistBumps = ({recentFistBumps}) => (
     {recentFistBumps.length ? (
       <ul className="recentFistBumpsList">
         {recentFistBumps.map( txn => (
-          <li className="recentFistBump" key={`bump-${Math.random()}`}>{txn.address} - {txn.message}</li>
+          <li className="recentFistBump" key={`bump-${Math.random()}`}>
+            <p>{txn.message}</p>
+            <p className="recentFistBumpAddress">{txn.address}</p>
+          </li>
         ))}
       </ul>
     ) : (

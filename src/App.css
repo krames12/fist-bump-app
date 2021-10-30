@@ -69,8 +69,15 @@
 .recentFistBumpsList {
   list-style: none;
   padding-inline-start: 0;
+  max-height: 27rem;
+  overflow-y: scroll;
 }
 
 .recentFistBump {
   padding: 0.25rem 0;
+  border-bottom: 1px solid #b4aa9c;
+}
+
+.recentFistBump:last-child {
+  border: 0;
 }
